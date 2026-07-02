@@ -350,9 +350,9 @@ to produce rankings recruiters can trust.
 
 # 👩‍💻 Developer
 
-**Chaitrali Tikar**
-**Shravan Navale**
-**Rushikesh Bobade**
+**Chaitrali Tikar**,
+**Shravan Navale**,
+**Rushikesh Bobade**,
 **Afroz khan**
 
 
