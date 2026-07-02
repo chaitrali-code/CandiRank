@@ -47,7 +47,7 @@ Finally, every candidate receives:
 
 ---
 
-# 🧠 Ranking Pipeline
+# 🧠 True AI Ranking Pipeline
 
 ```text
                 Job Description
@@ -55,9 +55,10 @@ Finally, every candidate receives:
               Constraint Mapping
                        │
                        ▼
-        Candidate Streaming Processor
+        [Stage 1] Candidate Streaming Processor
+            (Filters 100k -> Top 300)
                        │
-         Feature Extraction Engine
+         Behavioral Feature Extraction
                        │
 ──────────────────────────────────────────
 
@@ -80,13 +81,14 @@ Recruiter Response
 ──────────────────────────────────────────
                        │
                        ▼
-           Hybrid Heuristic Engine
+        [Stage 2] Semantic Evaluator
+         (Local all-MiniLM-L6-v2 Embeddings)
                        │
                        ▼
-           Explainable Multi-Factor Scoring
+         Dense Vector Cosine Similarity
                        │
                        ▼
-      Ranked Candidate Shortlist
+      Ranked Candidate Shortlist (Top 100)
                        │
                        ▼
           CSV Submission Generator
@@ -237,15 +239,23 @@ npm install
 
 ---
 
-# ▶️ Running the Ranker
+# ▶️ Running the True AI Pipeline
 
-Ensure that your `candidates.jsonl` file is placed in `data/candidates.jsonl`.
+Our pipeline uses a two-stage funnel to process data instantly while still utilizing Deep Learning.
 
+### Stage 1: The Sieve (Behavioral Filter)
 ```bash
 node src/ranker.js
 ```
+*Quickly streams the 100,000+ candidates and extracts the top 300 based purely on experience and behavioral metrics (bypassing RAM limits).*
 
-The output will be saved to `data/team_CandiRank.csv`.
+### Stage 2: The Neural Network (Semantic Evaluator)
+```bash
+node src/ranker_semantic.js
+```
+*Loads a local HuggingFace embedding model (`all-MiniLM-L6-v2`) via WebAssembly, converts candidates into Dense Vectors, and calculates Cosine Similarity against the Job Description.*
+
+The final AI output will be saved to `data/team_CandiRank.csv`.
 
 ---
 

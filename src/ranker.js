@@ -35,21 +35,7 @@ function scoreCandidate(candidate) {
     score += 8;
   }
 
-  // 3. Skills Match
-  let matchedSkills = 0;
-  const candidateSkills = (candidate.skills || []).map(s => typeof s === 'string' ? s.toLowerCase() : '');
-  for (const skill of TARGET_SKILLS) {
-    if (candidateSkills.some(cs => cs.includes(skill))) {
-      matchedSkills++;
-    }
-  }
-  const skillScore = (matchedSkills / TARGET_SKILLS.length) * 35;
-  score += skillScore;
-  if (matchedSkills >= 5) {
-    reasoningParts.push(`Strong ML/AI stack match`);
-  }
-
-  // 4. Career History (Shipper vs Researcher)
+  // 3. Career History (Shipper vs Researcher)
   let hasStartup = false;
   let hasFaang = false;
   for (const job of candidate.career_history || []) {
@@ -75,7 +61,7 @@ function scoreCandidate(candidate) {
     score += 2;
   }
 
-  // 5. Redrob Behavioral Signals (CRITICAL)
+  // 4. Redrob Behavioral Signals (CRITICAL)
   const signals = candidate.redrob_signals || {};
   
   const responseRate = signals.recruiter_response_rate || 0;
@@ -91,20 +77,16 @@ function scoreCandidate(candidate) {
     if (github > 80) reasoningParts.push(`active GitHub presence`);
   }
   
-  // Normalize score between 0 and 1, then scale to 100 for percentage
-  let normalizedScore = score / 120; // dividing by max possible
+  // Normalize score out of 85 (since we removed 35 points of hardcoded skills)
+  let normalizedScore = score / 85;
   if (normalizedScore > 0.99) normalizedScore = 0.99;
   if (normalizedScore < 0.1) normalizedScore = 0.1;
-  const percentageScore = normalizedScore * 100;
-
-  // Format reasoning
-  let reasoning = reasoningParts.join(', ') + '.';
-  if (reasoning === '.') reasoning = "Meets baseline requirements but lacks strong signals.";
 
   return {
     candidate_id: candidate.candidate_id,
-    score: percentageScore,
-    reasoning: reasoning.charAt(0).toUpperCase() + reasoning.slice(1)
+    behavioral_score: normalizedScore,
+    behavioral_reasoning: reasoningParts.join(', '),
+    full_candidate: candidate
   };
 }
 
@@ -120,7 +102,7 @@ async function processCandidates() {
   let topCandidates = [];
   let processed = 0;
 
-  console.log('Processing candidates...');
+  console.log('Stage 1: Filtering via Stream Processor...');
   for await (const line of rl) {
     if (!line.trim()) continue;
     try {
@@ -129,10 +111,10 @@ async function processCandidates() {
       
       topCandidates.push(result);
       
-      // Keep only top 150 in memory to be fast
-      if (topCandidates.length > 500) {
-        topCandidates.sort((a, b) => b.score - a.score);
-        topCandidates = topCandidates.slice(0, 150);
+      // Keep only top 800 in memory during stream
+      if (topCandidates.length > 800) {
+        topCandidates.sort((a, b) => b.behavioral_score - a.behavioral_score);
+        topCandidates = topCandidates.slice(0, 300);
       }
 
       processed++;
@@ -145,25 +127,14 @@ async function processCandidates() {
   }
   
   // final sort
-  topCandidates.sort((a, b) => b.score - a.score);
+  topCandidates.sort((a, b) => b.behavioral_score - a.behavioral_score);
+  const top300 = topCandidates.slice(0, 300);
 
-  console.log(`Finished processing ${processed} candidates. Writing top 100...`);
+  console.log(`Finished processing ${processed} candidates. Saving Top 300 to JSON...`);
 
-  // Write top 100 to CSV
-  const top100 = topCandidates.slice(0, 100);
-  
-  const csvLines = ['candidate_id,rank,score,reasoning'];
-  top100.forEach((c, index) => {
-    // Add jitter so scores are strictly non-increasing without ties
-    const finalScore = (c.score - (index * 0.0001)).toFixed(2);
-    // Escape quotes in reasoning
-    const safeReasoning = `"${c.reasoning.replace(/"/g, '""')}"`;
-    csvLines.push(`${c.candidate_id},${index + 1},${finalScore},${safeReasoning}`);
-  });
-
-  const outputPath = path.join(__dirname, '../data/team_CandiRank.csv');
-  fs.writeFileSync(outputPath, csvLines.join('\n'));
-  console.log(`Done! Output saved to ${outputPath}`);
+  const jsonPath = path.join(__dirname, '../data/top_300.json');
+  fs.writeFileSync(jsonPath, JSON.stringify(top300, null, 2));
+  console.log(`Stage 1 Complete! Top 300 candidates saved to ${jsonPath}`);
 }
 
 processCandidates().catch(console.error);
