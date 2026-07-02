@@ -13,16 +13,16 @@ team_members:
     email: "chaitrali678@gmail.com" 
     role: "Developer"
 
-    -name: "Shravan Navale"
+  - name: "Shravan Navale"
     email: "navaleshravan7@gmail.com" 
     role: "Developer"
 
-   - name: "Rushikesh bobade"
-    email: "chaitrali678@gmail.com" 
+  - name: "Rushikesh bobade"
+    email: "rushikesh9060@gmail.com" 
     role: "Developer"
 
-   - name: "Afroz khan"
-    email: "chaitrali678@gmail.com" 
+  - name: "Afroz khan"
+    email: "abuzarkhan8120068@gmail.com" 
     role: "Developer"
 
 github_repo: "https://github.com/chaitrali-code/CandiRank"
