@@ -2,7 +2,7 @@
 
 > **Beyond Keywords. Ranking Talent the Way Great Recruiters Think.**
 
-CandiRank is an AI-powered candidate ranking system built for the **Redrob AI Hiring Challenge**. Unlike traditional Applicant Tracking Systems (ATS) that rely on keyword matching, CandiRank evaluates candidates using a hybrid intelligence engine combining semantic understanding, behavioral signals, recruiter heuristics, and contextual scoring to identify the best-fit talent.
+CandiRank is a high-performance candidate ranking system built for the **Redrob AI Hiring Challenge**. Unlike traditional Applicant Tracking Systems (ATS) that rely on simple keyword matching, CandiRank evaluates candidates using a multi-dimensional heuristic intelligence engine combining technical skill density, behavioral signals, recruiter heuristics, and contextual scoring to identify the best-fit talent.
 
 ---
 
@@ -18,7 +18,7 @@ Keywords alone cannot answer important questions such as:
 - Are they likely to succeed in a startup or enterprise environment?
 - Can recruiters trust the ranking?
 
-CandiRank addresses these challenges through an explainable AI-driven ranking engine.
+CandiRank addresses these challenges through a mathematically explainable, multi-factor ranking engine.
 
 ---
 
@@ -40,19 +40,19 @@ The system analyzes:
 
 Finally, every candidate receives:
 
-- Overall AI Score
+- Overall Normalized Score
 - Ranking Position
 - Explainable Reasoning
 - Submission-ready CSV Output
 
 ---
 
-# 🧠 AI Ranking Pipeline
+# 🧠 Ranking Pipeline
 
 ```text
                 Job Description
                        │
-              Context Understanding
+              Constraint Mapping
                        │
                        ▼
         Candidate Streaming Processor
@@ -80,10 +80,10 @@ Recruiter Response
 ──────────────────────────────────────────
                        │
                        ▼
-          Hybrid Ranking Engine
+           Hybrid Heuristic Engine
                        │
                        ▼
-          Explainable AI Scoring
+           Explainable Multi-Factor Scoring
                        │
                        ▼
       Ranked Candidate Shortlist
@@ -105,9 +105,9 @@ Recruiter Response
 
 ---
 
-## 🧠 Hybrid AI Ranking
+## 🧠 Hybrid Heuristic Ranking
 
-Instead of keyword matching, candidates are evaluated using multiple weighted factors.
+Instead of exact keyword matching, candidates are evaluated using multiple weighted factors.
 
 ### Ranking Factors
 
@@ -212,10 +212,7 @@ CandiRank
 │
 ├── src/
 │   ├── ranker.js
-│   ├── generate_pdf.js
-│   ├── scorer.js
-│   ├── parser.js
-│   └── utils.js
+│   └── generate_pdf.js
 │
 ├── README.md
 ├── package.json
@@ -242,23 +239,13 @@ npm install
 
 # ▶️ Running the Ranker
 
-Place the dataset inside
-
-```
-data/candidates.jsonl
-```
-
-Run
+Ensure that your `candidates.jsonl` file is placed in `data/candidates.jsonl`.
 
 ```bash
 node src/ranker.js
 ```
 
-Output
-
-```
-data/team_CandiRank.csv
-```
+The output will be saved to `data/team_CandiRank.csv`.
 
 ---
 
@@ -292,17 +279,31 @@ CandiRank_Presentation.pdf
 
 The generated CSV contains:
 
-| Candidate ID | Score | Reason |
-|--------------|-------|--------|
-| C10231 | 97.2 | Strong backend + startup ownership |
-| C18342 | 95.8 | Excellent recruiter engagement |
-| C09122 | 94.7 | High GitHub consistency |
+```csv
+candidate_id,rank,score,reasoning
+CAND_0018722,1,64.48,"Perfect experience level (6.6 years), Scrappy startup experience, active GitHub presence."
+CAND_0007412,2,61.50,"Perfect experience level (7.4 years)."
+CAND_0077337,3,61.12,"Perfect experience level (7 years), highly responsive."
+```
 
 Scores are guaranteed to be:
 
 - Non-increasing
 - Deterministic
 - Submission compliant
+
+---
+
+# 🧠 Why are scores typically in the 60-70% range?
+
+Our engine calculates a **Theoretical Maximum Score**. To achieve a 100%, a candidate must possess an impossible combination of traits:
+1. Exactly 5-9 years of experience.
+2. Perfect location alignment.
+3. 100/100 GitHub Activity, 100% Recruiter Response Rate, and 100% Interview Completion Rate.
+4. Career history at *both* a FAANG-level enterprise AND a 1-10 person startup.
+5. A perfect 100% match against **all 17 specific ML tools/stacks**.
+
+In reality, a "Unicorn" candidate might only match 6 out of 17 exact tools, and have great (but not mathematically perfect) behavioral signals. Therefore, in our highly rigorous grading system, a score of **60% - 75%** represents an absolute top-tier, 1% candidate in the real world.
 
 ---
 

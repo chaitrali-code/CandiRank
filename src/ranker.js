@@ -91,10 +91,11 @@ function scoreCandidate(candidate) {
     if (github > 80) reasoningParts.push(`active GitHub presence`);
   }
   
-  // Normalize score between 0 and 1
-  let normalizedScore = score / 120; // dividing by max possible to keep around 0.8-0.9
+  // Normalize score between 0 and 1, then scale to 100 for percentage
+  let normalizedScore = score / 120; // dividing by max possible
   if (normalizedScore > 0.99) normalizedScore = 0.99;
   if (normalizedScore < 0.1) normalizedScore = 0.1;
+  const percentageScore = normalizedScore * 100;
 
   // Format reasoning
   let reasoning = reasoningParts.join(', ') + '.';
@@ -102,7 +103,7 @@ function scoreCandidate(candidate) {
 
   return {
     candidate_id: candidate.candidate_id,
-    score: normalizedScore,
+    score: percentageScore,
     reasoning: reasoning.charAt(0).toUpperCase() + reasoning.slice(1)
   };
 }
@@ -128,7 +129,7 @@ async function processCandidates() {
       
       topCandidates.push(result);
       
-      // Keep only top 150 in memory to be fast (sort and slice periodically to save time)
+      // Keep only top 150 in memory to be fast
       if (topCandidates.length > 500) {
         topCandidates.sort((a, b) => b.score - a.score);
         topCandidates = topCandidates.slice(0, 150);
@@ -154,7 +155,7 @@ async function processCandidates() {
   const csvLines = ['candidate_id,rank,score,reasoning'];
   top100.forEach((c, index) => {
     // Add jitter so scores are strictly non-increasing without ties
-    const finalScore = (c.score - (index * 0.0001)).toFixed(4);
+    const finalScore = (c.score - (index * 0.0001)).toFixed(2);
     // Escape quotes in reasoning
     const safeReasoning = `"${c.reasoning.replace(/"/g, '""')}"`;
     csvLines.push(`${c.candidate_id},${index + 1},${finalScore},${safeReasoning}`);
