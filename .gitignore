@@ -3,3 +3,4 @@ data/candidates.jsonl
 data/sample_candidates.json
 .env
 .DS_Store
+presentation_assests/

@@ -1,0 +1,56 @@
+# Redrob Hackathon — Submission Metadata
+# CandiRank by Chaitrali Tikar
+
+team_name: "Sapphire"
+
+primary_contact:
+  name: "Chaitrali Tikar"
+  email: "chaitrali678@gmail.com"   
+  phone: "+91-9309268480"               
+
+team_members:
+  - name: "Chaitrali Tikar"
+    email: "chaitrali678@gmail.com" 
+    role: "Developer"
+
+github_repo: "https://github.com/chaitrali-code/CandiRank"
+
+sandbox_link: "https://colab.research.google.com/drive/1ZCHZX1D9vRyf57wgL6UZQMQrfzK_F09H?usp=sharing"  
+
+reproduce_command: "node src/ranker.js && node src/ranker_semantic.js"
+
+compute:
+  platform: "Windows PC"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "N/A (Node.js 18+)"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: true
+  pre_computation_time_minutes: 1
+
+ai_tools_used:
+  - "Gemini"
+
+ai_usage_summary: |
+  Used Google Gemini for architecture discussion and debugging. 
+  All ranking logic, scoring weights, and honeypot detection were engineered
+  and validated manually. No candidate data was fed to any external LLM during ranking.
+
+methodology_summary: |
+  Two-stage hybrid ranker. Stage 1: Node.js stream processor filters 100K candidates to 
+  top 300 using a multi-factor heuristic (experience, location, 15+ behavioral signals, 
+  career trajectory, education tier, honeypot detection). Stage 2: Local HuggingFace 
+  all-MiniLM-L6-v2 embedding model generates dense vectors for candidate profiles and JD, 
+  then cosine similarity produces the semantic score. Final rank = 40% semantic + 60% 
+  behavioral. Reasoning references specific candidate facts and JD requirements. 
+  Honeypots filtered via impossible-profile detection (expert+0mo, tenure mismatch). 
+  Runtime: ~60 seconds total on CPU. No external API calls.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
